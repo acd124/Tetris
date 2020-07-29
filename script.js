@@ -1,7 +1,5 @@
 import { Display } from './Game/display.js'
 
-document.write('hi');
-
 let d = new Display(document.getElementById("boardCanvas"));
 window.myTetrisGame = d;
 
