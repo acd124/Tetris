@@ -17,6 +17,7 @@ export class Board {
         this.activeShape = null; // for holding the current dropping shape
         this.heldShape = null; // storate for shape
         this.cleared = 0; // score for cleared rows
+        this.rowsCleared = 0;
         this.ended = false; // if game over
         this.paused = false; // if paused
     }
@@ -37,6 +38,20 @@ export class Board {
         }
         this.ctx.stroke();
         this.ctx.strokeStyle = '#000000';
+
+        if(this.activeShape) {
+            let shape = this.activeShape.shaddow();
+            if(shape) {
+                for(let square of shape.squares.filter(s => s[1] < this.yMax)) {
+                    this.ctx.beginPath();
+                    this.ctx.rect(this.xOffset + (square[0] * this.gridSize), this.yOffset + this.height - (square[1] * this.gridSize), this.gridSize, -this.gridSize);
+                    this.ctx.strokeMany();
+
+                    this.ctx.fillStyle = '#DADADA';
+                    this.ctx.fillRect(this.xOffset + (square[0] * this.gridSize) + 1, this.yOffset + this.height - (square[1] * this.gridSize) - 1, this.gridSize - 2, -(this.gridSize - 2));
+                }
+            }
+        }
 
         this.squares.filter(square => square.y < this.yMax).forEach(this.drawSquare.bind(this));
     }
@@ -64,8 +79,8 @@ export class Board {
         this.ctx.fillRect(this.xOffset + (square.x * this.gridSize) + 1, this.yOffset + this.height - (square.y * this.gridSize) - 1, this.gridSize - 2, -(this.gridSize - 2));
     }
 
-    canMove(x, y, square) { // check for potential overlap and limit all sides except top
-        return x >= 0 && x < this.xMax && y >= 0 && this.squares.every(s => s.shape === square.shape || s.x !== x || s.y !== y);
+    canMove(x, y) { // check for potential overlap and limit all sides except top
+        return x >= 0 && x < this.xMax && y >= 0 && this.squares.every(s => s.shape || s.x !== x || s.y !== y);
     }
 
     newShape() { // spawn new shape
@@ -84,8 +99,14 @@ export class Board {
         }
         let shapesToMove = [];
         clearedRows.forEach(row => this.squares.filter(s => !s.shape && s.y > row).forEach(s => shapesToMove.push(s)));
-        this.cleared += Math.round(((1100 - this.display.rate) / 100) * (clearedRows.length * clearedRows.length) * 100);
+        this.cleared += this.getScore(clearedRows.length);
+        this.rowsCleared += clearedRows.length;
+        console.log(this.rowsCleared);
         shapesToMove.forEach(s => s.down());
+    }
+
+    getScore(rows) {
+        return Math.round(((1100 - this.display.rate) / 100) * (rows * rows) * 100);
     }
 
     hold() { // place active shape in hold, bring held shape back into active, can only hold once per drop
@@ -98,6 +119,15 @@ export class Board {
         this.activeShape.goDown = true;
     }
 
+    botHold() {
+        if(!this.activeShape) return;
+        this.activeShape.squares.forEach(s => this.squares.splice(this.squares.indexOf(s), 1));
+        let temp = this.heldShape;
+        this.heldShape = this.activeShape;
+        if(temp) this.activeShape = temp.start();
+        else this.newShape();
+    }
+
     reset() { // clean slate
         this.squares = [];
         this.activeShape?.squares.forEach(s => s.end());
@@ -108,6 +138,7 @@ export class Board {
         this.activeShape = null;
         this.heldShape = null;
         this.cleared = 0;
+        this.rowsCleared = 0;
         this.ended = false;
         this.paused = false;
     }

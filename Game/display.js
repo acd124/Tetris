@@ -16,24 +16,24 @@ export class Display {
         this.board = new Board(this); // board with the game
         this.pauseButton = new Box('Paused', this.width / 2, this.height / 3, this, 'text', () => "esc to resume", () => this.board.paused); // pause button
         this.endButton = new Box('Game Over', this.width / 2, this.height / 2, this, 'text', () => "R to restart", () => this.board.ended); // button to show
-        this.scoreBoard = new Box("Score", this.board.xOffset / 2, this.board.yOffset + 25, this, 'text', () => this.board.cleared); // box to show score
+        this.scoreBoard = new Box("Score", this.board.xOffset / 2, this.board.yOffset + 25, this, 'text', () => `${this.board.rowsCleared} - ${this.board.cleared}`); // box to show score
         this.nextBox = new Box("Next", (this.board.xOffset * 1.5) + this.board.width, this.board.yOffset + 75, this, 'image', () => this.board.nextShape); // box to show next shape
         this.holdBox = new Box("Held", this.board.xOffset / 2, this.board.yOffset + 150, this, 'image', () => this.board.heldShape); // show currently held shape
         this.elements = [this.board, this.pauseButton, this.endButton, this.scoreBoard, this.nextBox, this.holdBox]; // relevant elements
         this.rate = 1000 // speed
-        this.resetAlready = false; // prevent multiple resets
+        this.playTimeout = null; // next tick timeout for clearing when pausing or ending
+        this.bot = null;
     }
 
-    reset() { // should reset the whole game, needs to clear board etc
-        if(this.resetAlready) return; // no if already reseting
+    reset(bot = null) { // should reset the whole game, needs to clear board etc
         this.board.ended = true; // end game and prevent user input
-        this.resetAlready = true; // say am resetting
-        setTimeout(() => {
-            this.rate = 1000; // reset speed
-            this.board.reset(); // reset board
-            this.resetAlready = false;
-            this.play(); //starty playing again
-        }, 1000);
+        clearTimeout(this.playTimeout); // stop playing
+        this.bot?.wait();
+        this.rate = 1000; // reset speed
+        this.board.reset(); // reset board
+        this.play(); //starty playing again
+        this.bot = bot;
+        this.bot?.makeMove();
     }
 
     update() { // redraw everything
@@ -43,11 +43,11 @@ export class Display {
 
     play() { // repeatedly called to keep moving forward in time
         this.update();
-        if(this.board.ended || this.board.paused || this.resetAlready) return;
+        if(this.board.ended || this.board.paused) return;
         this.board.next();
         this.update();
 
-        !this.board.ended && !this.board.paused && setTimeout(() => this.play(), this.rate); // set next play cycle
+        if(!this.board.ended && !this.board.paused) this.playTimeout = setTimeout(() => this.play(), this.rate); // set next play cycle
         if(this.rate > 200) this.rate--; // make it speed up
     }
 
@@ -90,14 +90,19 @@ export class Display {
 
     hold() {
         if(this.board.paused || this.board.ended) return;
-        this.board.hold();
+        this.bot ? this.board.botHold() : this.board.hold();
         this.update();
     }
 
     pause() {
         if(this.board.ended) return;
+        clearTimeout(this.playTimeout);
+        this.bot?.wait();
         this.board.paused = !this.board.paused;
-        this.board.paused || this.play();
+        if(!this.board.paused) {
+            this.play();
+            this.bot?.makeMove();
+        }
         this.update();
     }
 }

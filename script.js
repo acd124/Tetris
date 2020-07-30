@@ -1,4 +1,5 @@
 import { Display } from './Game/display.js'
+import { Bot } from './Bot/interface.js'
 
 let d = new Display(document.getElementById("boardCanvas"));
 window.myTetrisGame = d;
@@ -23,6 +24,8 @@ window.addEventListener('keydown', e => {
         return d.pause();
         case 82:
         return d.reset();
+        case 66:
+        return d.reset(new Bot(d));
     }
 });
 

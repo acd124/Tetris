@@ -38,13 +38,13 @@ export class Shape {
     }
 
     canDown() { // check if can move down
-        return this.squares.every(s => this.board.canMove(s.x, s.y - 1, s));
+        return this.squares.every(s => this.board.canMove(s.x, s.y - 1));
     }
 
     move(dir) { // move left, right, or down
         let x = dir === 'left' ? -1 : dir === 'right' ? 1 : 0;
         let y = dir === 'down' ? -1 : 0;
-        if(this.squares.every(s => this.board.canMove(s.x + x, s.y + y, s))) {
+        if(this.squares.every(s => this.board.canMove(s.x + x, s.y + y))) {
             this.squares.forEach(s => s.move(s.x + x, s.y + y))
             this.x += x;
             this.y += y;
@@ -66,7 +66,7 @@ export class Shape {
     }
 
     rotate(left = true) { // rotate left or right
-        this.squares.every(s => this.board.canMove(...this.rotatePos(s, left), s)) && this.squares.forEach(s => s.move(...this.rotatePos(s, left)));
+        this.squares.every(s => this.board.canMove(...this.rotatePos(s, left))) && this.squares.forEach(s => s.move(...this.rotatePos(s, left)));
         
     }
 
@@ -75,5 +75,21 @@ export class Shape {
         for(let i = 0; i < y; i++) this.down();
         this.squares.forEach(s => s.end());
         this.board.activeShape = null;
+    }
+
+    shaddow(x = this.x) {
+        let data = {
+            x: x,
+            y: this.y,
+            squares: this.squares.map(s => [x + (s.x - this.x), s.y])
+        }
+        if(data.squares.some(s => !this.board.canMove(s[0], s[1]))) return null;
+        for(let i = 0; i < this.y; i++) {
+            if(data.squares.every(s => this.board.canMove(s[0], s[1] - 1))) {
+                data.y--;
+                data.squares.forEach(s => s[1]--);
+            }
+        }
+        return data;
     }
 }
