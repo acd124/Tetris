@@ -8,10 +8,8 @@ export class Bot {
     makeMove() { // make next move
         if(this.board.paused || this.board.ended) return;
         const firstMoves = this.findMoves();
-        console.log(firstMoves.map(a => a[0]));
         this.display.hold();
         const otherMoves = this.findMoves();
-        console.log(otherMoves.map(a => a[0]));
         const first = firstMoves.reduce((a, c) => a[0] < c[0] ? c : a, [0]);
         const other = otherMoves.reduce((a, c) => a[0] < c[0] ? c : a, [0]);
         const move = first[0] < other[0] ? other : first;
