@@ -41,19 +41,19 @@ export class Board {
 
         if(this.activeShape) {
             let shape = this.activeShape.shaddow();
-            if(shape) {
+            if(shape) { // draw shaddow
                 for(let square of shape.squares.filter(s => s[1] < this.yMax)) {
                     this.ctx.beginPath();
                     this.ctx.rect(this.xOffset + (square[0] * this.gridSize), this.yOffset + this.height - (square[1] * this.gridSize), this.gridSize, -this.gridSize);
                     this.ctx.strokeMany();
 
-                    this.ctx.fillStyle = '#DADADA';
+                    this.ctx.fillStyle = '#EEEEEE';
                     this.ctx.fillRect(this.xOffset + (square[0] * this.gridSize) + 1, this.yOffset + this.height - (square[1] * this.gridSize) - 1, this.gridSize - 2, -(this.gridSize - 2));
                 }
             }
         }
 
-        this.squares.filter(square => square.y < this.yMax).forEach(this.drawSquare.bind(this));
+        this.squares.filter(square => square.y < this.yMax).forEach(this.drawSquare.bind(this)); // draw each square
     }
 
     next() { // moves the active shape, and spawns a new one if needed
@@ -119,7 +119,7 @@ export class Board {
         this.activeShape.goDown = true;
     }
 
-    botHold() {
+    botHold() { // hold but don't limit number of times you can hold
         if(!this.activeShape) return;
         this.activeShape.squares.forEach(s => this.squares.splice(this.squares.indexOf(s), 1));
         let temp = this.heldShape;

@@ -5,8 +5,8 @@ export class Bot {
         this.moveTimeout = null;
     }
 
-    makeMove() {
-        if(this.board.paused || this.board.ended || !this.display.bot) return;
+    makeMove() { // make next move
+        if(this.board.paused || this.board.ended) return;
         const firstMoves = this.findMoves();
         console.log(firstMoves.map(a => a[0]));
         this.display.hold();
@@ -22,14 +22,14 @@ export class Bot {
             for(let i = 0; i < distance; i++) this.board.activeShape.x > move[2] ? this.display.left() : this.display.right();
             this.display.drop();
         }
-        setTimeout(() => this.makeMove(), 5);
+        this.moveTimeout = setTimeout(() => this.makeMove(), 5); // speed limiter is processing move, not this timeout, but this can slow it down
     }
 
-    wait() {
+    wait() { // stop making moves
         clearTimeout(this.moveTimeout);
     }
 
-    findMoves() {
+    findMoves() { // find and return all possible drop moves for the shape
         let moves = [];
         if(!this.board.activeShape) return moves;
         for(let j = 0; j < 4; j++) {
@@ -44,9 +44,9 @@ export class Bot {
         return moves;
     }
 
-    scoreMove(shaddow) {
-        let holes = shaddow.squares.reduce((a, c) => c[1] > 0 && !shaddow.squares.some(s => s[0] === c[0] && s[1] === c[1] - 1) && !this.board.squares.some(s => s.x === c[0] && s.y === c[1] - 1) ? a + 1 : a, 0);
-        let pillars = 0;
+    scoreMove(shaddow) { // return a score for a possible move
+        let holes = shaddow.squares.reduce((a, c) => c[1] > 0 && !shaddow.squares.some(s => s[0] === c[0] && s[1] === c[1] - 1) && !this.board.squares.some(s => s.x === c[0] && s.y === c[1] - 1) ? a + 1 : a, 0); // don't want holes
+        let pillars = 0; // don't want empty pillars
         for(let i = 0; i < this.board.xMax; i++) {
             let empty = 0;
             for(let j = 0; j < this.board.yMax; j++) {
@@ -59,15 +59,15 @@ export class Bot {
                 }
             }
         }
-        let height = shaddow.squares.reduce((a, c) => c[1] < a ? c[1] : a, 40);
-        let score = this.potentialScore(shaddow);
-        let high = shaddow.squares.reduce((a, c) => c[1] > a[1] ? c : a, 0);
+        let height = shaddow.squares.reduce((a, c) => c[1] < a ? c[1] : a, 40); // best if piece is lower
+        let score = this.potentialScore(shaddow); // larger score is nice
+        let high = shaddow.squares.reduce((a, c) => c[1] > a[1] ? c : a, 0); // better if it's not higher than everything else
         let alone = (high[0] - 1 < 0 || !this.board.squares.some(s => s.x === high[0] - 1 && s.y === high[1]) || shaddow.squares.some(s => s[0] === high[0] - 1 && s[1] === high[1])) &&  (high[0] + 1 > this.board.xMax || !this.board.squares.some(s => s.x === high[0] + 1 && s.y === high[1]) || shaddow.squares.some(s => s[0] === high[0] + 1 && s[1] === high[1]));
-        let highest = this.board.squares.filter(s => !s.shape).reduce((a, c) => c.y > a ? c.y : a, 0) + 1 < high;
+        let highest = this.board.squares.filter(s => !s.shape).reduce((a, c) => c.y > a ? c.y : a, 0) + 1 < high; // don't really like lonely pieces sticking up
         return ((this.board.yMax + 4 - height) / (10 * (pillars + holes + 1))) + (Math.sqrt(score) / 10) + (alone ? 0 : 0.5) + (highest ? 0 : 0.5);
     }
 
-    potentialScore(shaddow) {
+    potentialScore(shaddow) { // get the potential score increase
         let cleared = 0;
         for(let i = 0; i < this.board.yMax; i++) {
             if([...this.board.squares.filter(s => !s.shape && s.y === i), ...shaddow.squares.filter(s => s[1] === i)].length === this.board.xMax) cleared++;

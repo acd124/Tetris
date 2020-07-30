@@ -77,7 +77,7 @@ export class Shape {
         this.board.activeShape = null;
     }
 
-    shaddow(x = this.x) {
+    shaddow(x = this.x) { // get shaddow of the shape at a specific x coord
         let data = {
             x: x,
             y: this.y,

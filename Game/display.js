@@ -51,50 +51,50 @@ export class Display {
         if(this.rate > 200) this.rate--; // make it speed up
     }
 
-    left() {
+    left() { // attempt to move left
         if(this.board.paused || this.board.ended) return;
         this.board.activeShape?.move('left');
         this.update();
     }
 
-    right() {
+    right() { // attempt to move right
         if(this.board.paused || this.board.ended) return;
         this.board.activeShape?.move('right');
         this.update();
     }
 
-    down() {
+    down() { // attempt to move down
         if(this.board.paused || this.board.ended) return;
         this.board.activeShape?.move('down');
         this.update();
     }
 
-    rLeft() {
+    rLeft() { // attempt to rotate left
         if(this.board.paused || this.board.ended) return;
         this.board.activeShape?.rotate(true);
         this.update();
     }
 
-    rRight() {
+    rRight() { // attempt to rotate right
         if(this.board.paused || this.board.ended) return;
         this.board.activeShape?.rotate(false);
         this.update();
     }
 
-    drop() {
+    drop() { // drop the shape to the bottom and get a new one
         if(this.board.paused || this.board.ended) return;
         this.board.activeShape?.end();
         this.board.next();
         this.update();
     }
 
-    hold() {
+    hold() { // attempt to swap with held shape
         if(this.board.paused || this.board.ended) return;
         this.bot ? this.board.botHold() : this.board.hold();
         this.update();
     }
 
-    pause() {
+    pause() { // pause game
         if(this.board.ended) return;
         clearTimeout(this.playTimeout);
         this.bot?.wait();
