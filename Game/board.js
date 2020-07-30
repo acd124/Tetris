@@ -4,7 +4,7 @@ export class Board {
     constructor(display) {
         this.display = display; // back reference
         this.ctx = this.display.context; // drawing tool, board does all drawings for things in game
-        this.width = 250; // 10(14) grid spaces left right can be changed, suggested 250-350
+        this.width = 350; // 10-14 grid spaces left right can be changed, suggested 250-350
         this.height = 500; // 20 grid spaces up down
         this.xOffset = (this.display.width - this.width) / 2; // distance from left right
         this.yOffset = (this.display.height - this.height) / 2; // distance from top or bottom

@@ -18,7 +18,7 @@ export class Box {
         this.ctx.rect(this.xOffset, this.yOffset, this.width, this.height); // outline of box
         this.ctx.strokeMany();
 
-        this.ctx.fillStyle = this.name === 'You died' ? '#DF6BFF' : '#808080';
+        this.ctx.fillStyle = this.name === 'Game over' ? '#DF6BFF' : '#808080';
         this.ctx.fillRect(this.xOffset, this.yOffset, this.width, this.height); // background of box
 
         this.ctx.fillStyle = '#000000';
