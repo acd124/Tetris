@@ -59,9 +59,9 @@ export class Bot {
         }
         let height = shaddow.squares.reduce((a, c) => c[1] < a ? c[1] : a, 40); // best if piece is lower
         let score = this.potentialScore(shaddow); // larger score is nice
-        let high = shaddow.squares.reduce((a, c) => c[1] > a[1] ? c : a, 0); // better if it's not higher than everything else
-        let alone = (high[0] - 1 < 0 || !this.board.squares.some(s => s.x === high[0] - 1 && s.y === high[1]) || shaddow.squares.some(s => s[0] === high[0] - 1 && s[1] === high[1])) &&  (high[0] + 1 > this.board.xMax || !this.board.squares.some(s => s.x === high[0] + 1 && s.y === high[1]) || shaddow.squares.some(s => s[0] === high[0] + 1 && s[1] === high[1]));
-        let highest = this.board.squares.filter(s => !s.shape).reduce((a, c) => c.y > a ? c.y : a, 0) + 1 < high; // don't really like lonely pieces sticking up
+        let high = shaddow.squares.reduce((a, c) => c[1] > a[1] ? c : a, [0, 0]); // better if it's not higher than everything else
+        let alone = (high[0] - 1 > 0 && !this.board.squares.some(s => s.x === high[0] - 1 && s.y === high[1]) && !shaddow.squares.some(s => s[0] === high[0] - 1 && s[1] === high[1])) &&  (high[0] + 1 < this.board.xMax && !this.board.squares.some(s => s.x === high[0] + 1 && s.y === high[1]) && !shaddow.squares.some(s => s[0] === high[0] + 1 && s[1] === high[1]));
+        let highest = this.board.squares.filter(s => !s.shape).map(s => s.y).reduce((a, c) => a > c ? a : c, 0) + 1 < high[1];
         return ((this.board.yMax + 4 - height) / (10 * (pillars + holes + 1))) + (Math.sqrt(score) / 10) + (alone ? 0 : 0.5) + (highest ? 0 : 0.5);
     }
 
