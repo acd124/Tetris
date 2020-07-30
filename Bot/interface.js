@@ -8,8 +8,10 @@ export class Bot {
     makeMove() {
         if(this.board.paused || this.board.ended || !this.display.bot) return;
         const firstMoves = this.findMoves();
+        console.log(firstMoves.map(a => a[0]));
         this.display.hold();
         const otherMoves = this.findMoves();
+        console.log(otherMoves.map(a => a[0]));
         const first = firstMoves.reduce((a, c) => a[0] < c[0] ? c : a, [0]);
         const other = otherMoves.reduce((a, c) => a[0] < c[0] ? c : a, [0]);
         const move = first[0] < other[0] ? other : first;
@@ -20,7 +22,7 @@ export class Bot {
             for(let i = 0; i < distance; i++) this.board.activeShape.x > move[2] ? this.display.left() : this.display.right();
             this.display.drop();
         }
-        setTimeout(() => this.makeMove(), 10);
+        setTimeout(() => this.makeMove(), 5);
     }
 
     wait() {
@@ -60,8 +62,9 @@ export class Bot {
         let height = shaddow.squares.reduce((a, c) => c[1] < a ? c[1] : a, 40);
         let score = this.potentialScore(shaddow);
         let high = shaddow.squares.reduce((a, c) => c[1] > a[1] ? c : a, 0);
-        let alone = (high[0] - 1 < 0 || !this.board.squares.some(s =>)
-        return ((this.board.yMax + 4 - height) / (10 * (pillars + holes + 1))) + (Math.sqrt(score) / 10) + ;
+        let alone = (high[0] - 1 < 0 || !this.board.squares.some(s => s.x === high[0] - 1 && s.y === high[1]) || shaddow.squares.some(s => s[0] === high[0] - 1 && s[1] === high[1])) &&  (high[0] + 1 > this.board.xMax || !this.board.squares.some(s => s.x === high[0] + 1 && s.y === high[1]) || shaddow.squares.some(s => s[0] === high[0] + 1 && s[1] === high[1]));
+        let highest = this.board.squares.filter(s => !s.shape).reduce((a, c) => c.y > a ? c.y : a, 0) + 1 < high;
+        return ((this.board.yMax + 4 - height) / (10 * (pillars + holes + 1))) + (Math.sqrt(score) / 10) + (alone ? 0 : 0.5) + (highest ? 0 : 0.5);
     }
 
     potentialScore(shaddow) {
