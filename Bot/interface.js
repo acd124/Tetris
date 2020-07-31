@@ -20,7 +20,7 @@ export class Bot {
             for(let i = 0; i < distance; i++) this.board.activeShape.x > move[2] ? this.display.left() : this.display.right();
             this.display.drop();
         }
-        this.moveTimeout = setTimeout(() => this.makeMove(), 5); // speed limiter is processing move, not this timeout, but this can slow it down
+        this.moveTimeout = setTimeout(() => this.makeMove(), 5);// speed limiter is processing move, not this timeout, but this can slow it down
     }
 
     wait() { // stop making moves

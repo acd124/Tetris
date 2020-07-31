@@ -6,15 +6,16 @@ export class Shape {
         this.varient = varient;
         this.squares = [];
         let thisShape = this.constructor.shapes()[varient] || []; // get the relations with the squares
-        for(let i = 1; i <= 4; i++) {
-            let square = new Square(...thisShape[i], thisShape[0], this)
+        let color = thisShape.shift();
+        for(let sq of thisShape) {
+            let square = new Square(...sq, color, this);
             this.squares.push(square);
         }
         this.waits = 0; // times waited going down
     }
 
     start() { // brings it to the board at the top
-        this.x = Math.round(this.board.xMax / 2);
+        this.x = Math.floor(this.board.xMax / 2);
         this.y = this.board.yMax + (this.board.squares.some(s => !s.shape && s.y > this.board.yMax - 4) ? 3 : -2);
         this.squares.forEach(s => s.move(this.x + s.startX, this.y + s.startY));
         this.squares.forEach(square => this.board.squares.push(square));

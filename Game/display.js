@@ -48,7 +48,7 @@ export class Display {
         this.update();
 
         if(!this.board.ended && !this.board.paused) this.playTimeout = setTimeout(() => this.play(), this.rate); // set next play cycle
-        if(this.rate > 200) this.rate--; // make it speed up
+        if(this.rate > 150) this.rate--; // make it speed up
     }
 
     left() { // attempt to move left
