@@ -8,8 +8,8 @@ export class Display {
         this.height = canvas.height; // easier access
         this.context = canvas.getContext('2d'); // context to be used by elements
 
-        this.context.strokeMany = (times = 5) => { // draw darker lines around things
-            for(let i = 0; i < times; i++) this.context.stroke();
+        this.context.strokeMany = function(times = 5) { // draw darker lines around things
+            for(let i = 0; i < times; i++) this.stroke();
         };
         this.context.textAlign = 'center'; // sets text to be centered
 

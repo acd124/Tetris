@@ -20,7 +20,8 @@ export class Bot {
             for(let i = 0; i < distance; i++) this.board.activeShape.x > move[2] ? this.display.left() : this.display.right();
             this.display.drop();
         }
-        this.moveTimeout = setTimeout(() => this.makeMove(), 5);// speed limiter is processing move, not this timeout, but this can slow it down
+        // speed limiter is processing move, not this timeout, but this can slow it down
+        this.moveTimeout = setTimeout(() => this.makeMove(), 5);
     }
 
     wait() { // stop making moves
@@ -62,7 +63,10 @@ export class Bot {
         let high = shaddow.squares.reduce((a, c) => c[1] > a[1] ? c : a, [0, 0]); // better if it's not higher than everything else
         let alone = (high[0] - 1 > 0 && !this.board.squares.some(s => s.x === high[0] - 1 && s.y === high[1]) && !shaddow.squares.some(s => s[0] === high[0] - 1 && s[1] === high[1])) &&  (high[0] + 1 < this.board.xMax && !this.board.squares.some(s => s.x === high[0] + 1 && s.y === high[1]) && !shaddow.squares.some(s => s[0] === high[0] + 1 && s[1] === high[1]));
         let highest = this.board.squares.filter(s => !s.shape).map(s => s.y).reduce((a, c) => a > c ? a : c, 0) + 1 < high[1];
-        return ((this.board.yMax + 4 - height) / (10 * (pillars + holes + 1))) + (Math.sqrt(score) / 10) + (alone ? 0 : 0.5) + (highest ? 0 : 0.5);
+
+        return ((this.board.yMax + 4 - height) / (10 * (pillars + holes + 1))) + 
+        (Math.sqrt(score) / 10) + 
+        (alone ? 0 : 0.5) + (highest ? 0 : 0.5);
     }
 
     potentialScore(shaddow) { // get the potential score increase

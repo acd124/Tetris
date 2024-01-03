@@ -104,7 +104,7 @@ export class Board {
     }
 
     getScore(rows) {
-        return Math.round(((1100 - this.display.rate) / 100) * (rows * rows) * 100);
+        return [0, 40, 100, 300, 1200][rows] * Math.floor((1050 - this.display.rate) / 50);
     }
 
     hold() { // place active shape in hold, bring held shape back into active, can only hold once per drop
